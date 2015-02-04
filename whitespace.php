@@ -46,26 +46,49 @@ class Interpreter {
     function exec($content) {
         $lexer = new Lexer($content);
         $parser = new ParserList($lexer);
-        list($ast, $labels) = $parser->parse();
+        list($ast, $labels, $offsets) = $parser->parse();
         $this->evalList($ast, $labels);
     }
 
-    function compileFile($filename) {
+    function compile2File($filename, $filepath, $text = false) {
         $content = file_get_contents($filename);
-        $this->toText($content);
+        $ret = $text ? $this->toText($content) : $this->toBinFile($content);
+        $fp = fopen($filepath, "wb");
+        fwrite($fp, $ret);
     }
 
     function toText($content) {
         $lexer = new Lexer($content);
         $parser = new ParserList($lexer);
-        list($ast, $labels) = $parser->parse();
+        list($ast, $labels, $offsets) = $parser->parse();
+        $result = "";
         foreach ($ast as $token) {
             if (sizeof($token) == 2) {
-                echo $lexer->getCmdName($token[0]) . " " . $token[1] . "\n";
+                $result .= $lexer->getCmdName($token[0]) . " " . $token[1] . "\n";
             } else {
-                echo $lexer->getCmdName($token[0]) . "\n";
+                $result .= $lexer->getCmdName($token[0]) . "\n";
             }
         }
+        return $result;
+    }
+
+    function toBinFile($content) {
+        $lexer = new Lexer($content);
+        $parser = new ParserList($lexer);
+        list($ast, $labels, $offsets) = $parser->parse();
+        $result = "";
+        foreach ($ast as $token) {
+            if (sizeof($token) == 2) {
+                if ($lexer->hasLabel($token)) {
+                    $result .= pack("ll", $token[0], $offsets[$token[0]]);
+                } else {
+                    $result .= pack("ll", $token[0], $token[1]);
+                }
+            } else {
+                $result .= pack("l", $token[0]);
+            }
+        }
+        return $result;
     }
 
     function pre($ast) {
@@ -213,7 +236,7 @@ class Interpreter {
     function evalList($ast, $labels, $func_call = false, $index = 0) {
         $ast_len = sizeof($ast);
         for ($i = $index; $i < $ast_len; ++$i) {
-            $len = sizeof($this->stack) -1;
+            $len = sizeof($this->stack) - 1;
 //            echo "stack top: ".$this->stack[$len]. " \n";
 //            echo $i ." ".$len. " ";
             $token = $ast[$i];
@@ -323,13 +346,13 @@ class Interpreter {
 //                    $len = sizeof($this->stack) - 1;
 //                    $addr = array_pop($this->stack);
 //                    echo chr($this->stack[$len]);
-                    $c = array_pop($this->stack) ;
+                    $c = array_pop($this->stack);
                     echo chr($c);
                     break;
                 case OUTNUM:
 //                    $len = sizeof($this->stack) - 1;
 //                    echo $this->stack[$len];
-                    $n = array_pop($this->stack) ;
+                    $n = array_pop($this->stack);
                     echo $n;
                     break;
                 case INCHAR:
@@ -357,4 +380,5 @@ class Interpreter {
 
 $interp = new Interpreter();
 //$interp->execute_file($argv[1]);
-$interp->executeFile($argv[1]);
+//$interp->executeFile($argv[1]);
+$interp->compile2File($argv[1],$argv[2],true);

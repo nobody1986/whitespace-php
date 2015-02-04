@@ -120,7 +120,6 @@ class Lexer {
             }
             $tmp = &$tree;
         }
-//        var_dump($tree);
         return $tree;
     }
 
@@ -141,19 +140,15 @@ class Lexer {
         $number = "";
         for ($i = $index; $i < $len; ++$i) {
             if ($str[$i] == "\n") {
-//                var_dump($number);
-//                echo "newline:".$i."\n";
                 break;
             }
             if (in_array($str[$i], $this->inval)) {
                 $number .= $str[$i] == " " ? "0" : "1";
             }
         }
-//        var_dump($number);
         $symbol = $number[0];
         $number = bindec(substr($number, 1));
         $number = $symbol == "\t" ? -$number : $number;
-//        var_dump($number);
         return [$i, $number];
     }
 
@@ -171,22 +166,10 @@ class Lexer {
     }
 
     function getNextToken() {
-//        echo "index:" . $this->index . "\n";
         $len = strlen($this->str);
         $tmp = $this->token_tree;
         for (; $this->index < $len; ++$this->index) {
             if (in_array($this->str[$this->index], $this->inval)) {
-//                if ($this->index > 700) {
-//                    if ($this->str[$this->index] == "\t") {
-//                        echo "tab \n";
-//                    }
-//                    if ($this->str[$this->index] == ' ') {
-//                        echo "space \n";
-//                    }
-//                    if ($this->str[$this->index] == "\n") {
-//                        echo "newline \n";
-//                    }
-//                }
                 if (isset($tmp[$this->str[$this->index]])) {
                     $tmp = $tmp[$this->str[$this->index]];
                     if (isset($tmp['t'])) {
@@ -195,7 +178,6 @@ class Lexer {
                             $this->index = $ret[0] - 1;
                             continue;
                         }
-//                        if($tmp['t']==MARK || $tmp['t']==CALL || $tmp['t']==ENDFUNC) echo "type: " . $tmp['t'] . "\n";
                         if (in_array($tmp['t'], $this->bin_op)) {
                             if (in_array($tmp['t'], $this->need_number)) {
                                 $number = $this->getNumber($this->str, $this->index + 1, $len);
@@ -203,7 +185,6 @@ class Lexer {
                                 $number = $this->getLabel($this->str, $this->index + 1, $len);
                             }
                             $this->index = $number[0] + 1;
-//                            var_dump($number);
                             return [$tmp['t'], $number[1]];
                         } else {
                             $this->index = $this->index + 1;
@@ -219,9 +200,13 @@ class Lexer {
     function isLabel($token) {
         return $token[0] == MARK;
     }
-    
+
     function getCmdName($cmd) {
         return $this->token_command[$cmd];
+    }
+
+    function hasLabel($token) {
+        return in_array($token[0], $this->need_label);
     }
 
 }

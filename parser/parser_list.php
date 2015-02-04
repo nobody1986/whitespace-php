@@ -15,32 +15,23 @@ class ParserList {
     function __construct($lexer) {
         $this->lexer = $lexer;
     }
-    
-    function parse(){
+
+    function parse() {
         $ast = [];
         $labels = [];
+        $label_offset = [];
         $index = 0;
-//        $tmp = &$ast;
-        /**
-         *
-         *  while ($token = $this->lexer->getNextToken()) {
-            $tmp['left'] = isset($token[1])?$token[1]:[];
-            $tmp['right'] = [];
-            $tmp['t'] = $token[0];
-            $tmp = &$tmp['right'];
-        }
-         */
-        while($token = $this->lexer->getNextToken()){
-//            $tmp['left'] = $token;
-//            $tmp['right'] = [];
-//            $tmp = &$tmp['right'];
+        $offset = 0;
+        while ($token = $this->lexer->getNextToken()) {
             array_push($ast, $token);
-            if($this->lexer->isLabel($token)){
+            if ($this->lexer->isLabel($token)) {
                 $labels[$token[1]] = $index;
+                $label_offset[$token[1]] = $offset;
             }
+            $offset += sizeof($token);
             ++$index;
         }
-        return [$ast,$labels];
+        return [$ast, $labels,$label_offset];
     }
 
 }
