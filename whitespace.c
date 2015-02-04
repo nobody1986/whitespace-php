@@ -122,6 +122,7 @@ int eval(char *content, int size, Stack *stack, List *heap, int func_call, int i
                 data = *data_pp + *data_p;
                 data_p = (int *) malloc(sizeof (int));
                 *data_p = data;
+                push(stack,data_p);
                 break;
             case SUB:
                 data_p = (int *)pop(stack);
@@ -129,6 +130,7 @@ int eval(char *content, int size, Stack *stack, List *heap, int func_call, int i
                 data = *data_pp  - *data_p;
                 data_p = (int *) malloc(sizeof (int));
                 *data_p = data;
+                push(stack,data_p);
                 break;
             case MUL:
                 data_p = (int *)pop(stack);
@@ -136,6 +138,7 @@ int eval(char *content, int size, Stack *stack, List *heap, int func_call, int i
                 data = *data_pp * *data_p;
                 data_p = (int *) malloc(sizeof (int));
                 *data_p = data;
+                push(stack,data_p);
                 break;
             case DIV:
                 data_p = (int *)pop(stack);
@@ -143,6 +146,7 @@ int eval(char *content, int size, Stack *stack, List *heap, int func_call, int i
                 data = *data_pp / *data_p;
                 data_p = (int *) malloc(sizeof (int));
                 *data_p = data;
+                push(stack,data_p);
                 break;
             case MOD:
                 data_p = (int *)pop(stack);
@@ -150,6 +154,7 @@ int eval(char *content, int size, Stack *stack, List *heap, int func_call, int i
                 data = *data_pp % *data_p;
                 data_p = (int *) malloc(sizeof (int));
                 *data_p = data;
+                push(stack,data_p);
                 break;
             case STORE:
                 data_p = (int *)pop(stack);

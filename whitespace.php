@@ -381,4 +381,4 @@ class Interpreter {
 $interp = new Interpreter();
 //$interp->execute_file($argv[1]);
 //$interp->executeFile($argv[1]);
-$interp->compile2File($argv[1],$argv[2],true);
+$interp->compile2File($argv[1],$argv[2]);
