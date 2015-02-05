@@ -80,7 +80,7 @@ class Interpreter {
         foreach ($ast as $token) {
             if (sizeof($token) == 2) {
                 if ($lexer->hasLabel($token)) {
-                    $result .= pack("ll", $token[0], $offsets[$token[0]]);
+                    $result .= pack("ll", $token[0], $offsets[$token[1]]);
                 } else {
                     $result .= pack("ll", $token[0], $token[1]);
                 }
@@ -380,5 +380,5 @@ class Interpreter {
 
 $interp = new Interpreter();
 //$interp->execute_file($argv[1]);
-//$interp->executeFile($argv[1]);
-$interp->compile2File($argv[1],$argv[2]);
+$interp->executeFile($argv[1]);
+//$interp->compile2File($argv[1],$argv[2]);

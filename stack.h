@@ -30,6 +30,9 @@ typedef struct stack_prototype {
 
 void *pop(Stack *stack);
 void *getTop(Stack *stack);
+void *delN(Stack *stack,int n);
+int exchangeTop(Stack *stack);
+int exchange(Stack *stack,int from,int to);
 int stackSize(Stack *stack);
 void push(Stack *stack,void *p);
 Stack *initStack();

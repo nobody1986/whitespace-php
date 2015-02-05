@@ -37,9 +37,10 @@ int eval(char *content, int size, Stack *stack, List *heap, int func_call, int i
     int *data_pp = NULL;
     Stack *tmp = (Stack *) initStack();
     int n = 0;
-    size = size / sizeof (int);
-    while (i < size) {
+    int size_int = size / sizeof (int);
+    while (i < size_int) {
         opcode = *(c + i);
+//        printf("opcode: %d\n",opcode);
         switch (opcode) {
             case PUSH:
                 i += 1;
@@ -64,28 +65,32 @@ int eval(char *content, int size, Stack *stack, List *heap, int func_call, int i
             case SLIDEOFF:
                 i += 1;
                 data = *(c + i);
-                for (n = 0; n < data; ++n) {
-                    data_p = (int *) pop(stack);
-                    push(tmp, data_p);
-                }
-                data_pp = (int *) pop(tmp);
-                while (data_p = pop(tmp)) {
-                    push(stack, data_p);
-                }
+//                for (n = 0; n < data; ++n) {
+//                    data_p = (int *) pop(stack);
+//                    push(tmp, data_p);
+//                }
+//                data_pp = (int *) pop(tmp);
+//                while (data_p = pop(tmp)) {
+//                    push(stack, data_p);
+//                }
+                delN(stack,data);
                 break;
             case MARK:
                 i += 1;
                 data = *(c + i);
+//                printf("offset: %d\n",data);
                 break;
             case CALL:
                 i += 1;
                 data = *(c + i);
+//                printf("offset: %d\n",data);
                 eval(content, size, stack, heap, 1, data);
                 break;
             case JUMP:
                 i += 1;
                 data = *(c + i);
                 i = data;
+                continue;
                 break;
             case JUMPNULL:
                 i += 1;
@@ -93,6 +98,7 @@ int eval(char *content, int size, Stack *stack, List *heap, int func_call, int i
                 data_p = (int *) pop(stack);
                 if (*data_p == 0) {
                     i = data;
+                    continue;
                 }
                 break;
             case JUMPDE:
@@ -101,6 +107,7 @@ int eval(char *content, int size, Stack *stack, List *heap, int func_call, int i
                 data_p = (int *) pop(stack);
                 if (*data_p < 0) {
                     i = data;
+                    continue;
                 }
                 break;
             case COPY:
@@ -108,10 +115,11 @@ int eval(char *content, int size, Stack *stack, List *heap, int func_call, int i
                 push(stack,data_p);
                 break;
             case EXCHANGE:
-                data_p = (int *)pop(stack);
-                data_pp = (int *)pop(stack);
-                push(stack,data_p);
-                push(stack,data_pp);
+//                data_p = (int *)pop(stack);
+//                data_pp = (int *)pop(stack);
+//                push(stack,data_p);
+//                push(stack,data_pp);
+                exchangeTop(stack);
                 break;
             case DROP:
                 (int *)pop(stack);
@@ -183,12 +191,17 @@ int eval(char *content, int size, Stack *stack, List *heap, int func_call, int i
             case INCHAR:
                 data_p = (int *) malloc(sizeof (int));
                 *data_p = (int)getchar();
-                push(stack,data_p);
+                data_pp = (int *) pop(stack);
+                insertToList(heap,data_p,*data_pp);
+//                printf("input: %d\n",*data_p);
+//                push(stack,data_p);
                 break;
             case INNUM:
                 data_p = (int *) malloc(sizeof (int));
                 scanf("%d",data_p);
-                push(stack,data_p);
+                data_pp = (int *) pop(stack);
+                insertToList(heap,data_p,*data_pp);
+//                push(stack,data_p);
                 break;
         }
         i += 1;
